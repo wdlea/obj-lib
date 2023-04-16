@@ -1,18 +1,37 @@
 import { Vector3, Vector4 } from "./vectors"
 
+type RawFace = {
+    VertexIndices: Array<number>,
+    UVIndices: Array<number>,
+    NormalIndices: Array<number>,
+}
+
 export class Model {
 
     public vertices: Array<Vector4>;
     public indices: Array<number>;
+
+
     public UVs: Array<Vector3>;
     public Normals: Array<Vector3>;
+
+    //all the normals and UVs in order, will be resolved into Normals later in face code
+    private UVsReference: Array<Vector3>;
+    private NormalsReference: Array<Vector3>;
+
+    private DefferredFaces: Array<RawFace>;
 
     constructor() {
         this.vertices = new Array<Vector4>();
         this.indices = new Array<number>();
 
+        this.UVsReference = new Array<Vector3>();
+        this.NormalsReference = new Array<Vector3>();
+
         this.UVs = new Array<Vector3>();
         this.Normals = new Array<Vector3>();
+
+        this.DefferredFaces = new Array<RawFace>();
     }
 
     public static FromSrc(src: string): Model {
@@ -41,7 +60,19 @@ export class Model {
                         m.HandleVertex(split.slice(1));
                         break;
                     }
-                    case "vt": {
+                    case "vt": {//texture coordinate as vector3
+                        m.HandleUV(split.slice(1))
+                        break;
+                    }
+                    case "vn": {
+                        m.HandleNormal(split.slice(1))
+                        break;
+                    }
+                    case "vp": {
+                        console.log("parameter space vertex detected, not implemented becuase i dont understand what it does");
+                        break;
+                    }
+                    case "f": {
 
                     }
                 }
@@ -67,11 +98,72 @@ export class Model {
         if (vec != null) this.vertices.push(vec)
     }
 
-    //parses texture coordinate code, if valid pushes it to UVs
+    //parses texture coordinate code, if valid pushes it to UVsReference
     private HandleUV(splitLine: Array<string>) {
         if (splitLine[0] == "vt") splitLine = splitLine.slice(1);
 
         let vec = Vector3.FromStringArray(splitLine, 2, 0);
-        if (vec != null) this.UVs.push(vec);
+        if (vec != null) this.UVsReference.push(vec);
+    }
+
+    //parses normal code, if valid pushes to NormalsReference
+    private HandleNormal(splitLine: Array<string>) {
+        if (splitLine[0] == "vn") splitLine = splitLine.slice(1);
+
+        let vec = Vector3.FromStringArray(splitLine, 0, 0);
+        if (vec != null) this.NormalsReference.push(vec)
+    }
+
+    //defers face for processing once all other things have been resolved
+    private DeferFace(splitLine: Array<string>) {
+        if (splitLine[0] == "f") splitLine = splitLine.slice(1);
+
+        let f: RawFace = {
+            VertexIndices: new Array<number>(),
+            NormalIndices: new Array<number>(),
+            UVIndices: new Array<number>(),
+        }
+
+        if (splitLine.length < 3) {
+            console.error("Cannot form a face from less than 3 vertices");
+            return;
+        }
+
+        for (let pointIndex = 0; pointIndex < splitLine.length; pointIndex++) {
+            const splitPoint = splitLine[pointIndex].trim().split("/");
+
+            switch (splitPoint.length) {
+                case 3: {
+                    const normIndex = Number(splitPoint[2]);
+
+                    if (Number.isNaN(normIndex)) {
+                        console.error("Unable to convert normal index %s to number", splitPoint[2]);
+                        return;
+                    }
+
+                    f.NormalIndices.push(normIndex)
+                    //fall
+                }
+                case 2: {
+                    let uvIndex = Number(splitPoint[1]);
+                    if (Number.isNaN(uvIndex)) {
+                        uvIndex = 0;
+                    }
+                    f.UVIndices.push(uvIndex - 1);//subtract 1 becuase texture coord indices start from 1 in file but will start from 0 in an array
+                    //fall
+                }
+                case 1: {
+                    const vertIndex = Number(splitPoint[0]);
+                    if (Number.isNaN(vertIndex)) {
+                        console.error("Unable to convert vertex index %s to number", splitPoint[0]);
+                        return;
+                    }
+                    f.VertexIndices.push(vertIndex);
+                    //fall
+                }
+            }
+        }
+
+
     }
 }
