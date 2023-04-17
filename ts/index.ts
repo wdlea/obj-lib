@@ -1,9 +1,15 @@
 import { Model } from "./model";
 
 export class OBJFile {
-    public Models: Array<Model>;
+    public Model: Model;
 
     constructor() {
-        this.Models = new Array<Model>();
+        this.Model = new Model();
+    }
+
+    public static fromSrc(src: string): OBJFile {
+        let f = new OBJFile();
+        f.Model = Model.FromSrc(src)
+        return f
     }
 }

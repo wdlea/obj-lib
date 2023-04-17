@@ -73,7 +73,6 @@ export class Model {
                         break;
                     }
                     case "f": {
-                        m.HandleNormal(split.slice(1))
                         m.DeferFace(split)
                         break;
                     }
@@ -81,8 +80,7 @@ export class Model {
             }
         )
 
-
-
+        m.ProcessDeferredFaces();
         return m;
     }
 
@@ -143,12 +141,12 @@ export class Model {
                         return;
                     }
 
-                    f.NormalIndices.push(normIndex)
+                    f.NormalIndices.push(normIndex - 1)//subtract 1 becuase texture coord indices start from 1 in file but will start from 0 in an array
                     //fall
                 }
                 case 2: {
                     let uvIndex = Number(splitPoint[1]);
-                    if (Number.isNaN(uvIndex)) {
+                    if (Number.isNaN(uvIndex)) {//optional, default to 0
                         uvIndex = 0;
                     }
                     f.UVIndices.push(uvIndex - 1);//subtract 1 becuase texture coord indices start from 1 in file but will start from 0 in an array
@@ -160,12 +158,47 @@ export class Model {
                         console.error("Unable to convert vertex index %s to number", splitPoint[0]);
                         return;
                     }
-                    f.VertexIndices.push(vertIndex);
+                    f.VertexIndices.push(vertIndex - 1);//subtract 1 becuase texture coord indices start from 1 in file but will start from 0 in an array
                     //fall
                 }
             }
         }
 
+        let triangles = this.TriangulateFace(f);
+        if (triangles === null) return
 
+
+        //add faces to array
+        this.DefferredFaces.push(...triangles)
+    }
+
+    //processes deferred faces
+    private ProcessDeferredFaces() {
+        for (let i = 0; i < this.DefferredFaces.length; i++) {
+            const currentFace = this.DefferredFaces[i];//will be a triangle becuase the faces are trianulated before being sent to defferredfaces
+
+            //add vertex indices to array, i dont need to process them further
+            this.indices.push(...currentFace.VertexIndices)
+
+            for (let pointIndex = 0; pointIndex < 3; pointIndex++) {
+                //get indices
+                const UVIndex = currentFace.UVIndices[pointIndex];
+                const NormalIndex = currentFace.NormalIndices[pointIndex];
+
+                //resolve indices, and push to list
+                this.UVs.push(this.UVsReference[UVIndex]);
+                this.Normals.push(this.NormalsReference[NormalIndex]);
+            }
+        }
+    }
+
+    private TriangulateFace(f: RawFace): Array<RawFace> | null {
+        if (f.NormalIndices.length != 3 || f.UVIndices.length != 3 || f.VertexIndices.length != 3) {
+            console.error("Face is not triangles, not implemented")
+            //todo implement some algorithm to split face into triangles
+
+            return null
+        }
+        return [f]
     }
 }

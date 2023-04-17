@@ -4,10 +4,12 @@
   "description": "A simple obj file parser",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "files": ["lib/**/*", "license.txt"],
+  "files": [
+    "lib/**/*",
+    "license.txt"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build" : "tsc"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
