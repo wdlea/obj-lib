@@ -1,21 +1,24 @@
 {
   "name": "obj-lib",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "A simple obj file parser",
-  "main": "src/index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": ["lib/**/*", "license.txt"],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build" : "tsc"
   },
   "repository": {
     "type": "git",
-    "url": "github.com/wdlea/obj-lib"
+    "url": "https://github.com/wdlea/obj-lib.git"
   },
   "keywords": [
     "obj"
   ],
   "author": "William L",
   "license": "SEE LICENSE IN license.txt",
-  "dependencies": {
+  "devDependencies": {
     "typescript": "^5.0.4"
   }
 }

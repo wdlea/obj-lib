@@ -73,7 +73,9 @@ export class Model {
                         break;
                     }
                     case "f": {
-
+                        m.HandleNormal(split.slice(1))
+                        m.DeferFace(split)
+                        break;
                     }
                 }
             }

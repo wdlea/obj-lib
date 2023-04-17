@@ -1,5 +1,9 @@
+import { Model } from "./model";
 
+export class OBJFile {
+    public Models: Array<Model>;
 
-export type OBJFile = {
-
+    constructor() {
+        this.Models = new Array<Model>();
+    }
 }
