@@ -1,4 +1,6 @@
 import { Model } from "./model";
+export { Model } from "./model"
+export { Vector3, Vector4 } from "./vectors"
 
 export class OBJFile {
     public Model: Model;

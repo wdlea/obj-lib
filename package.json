@@ -1,11 +1,11 @@
 {
-  "name": "obj-lib",
-  "version": "0.0.0",
+  "name": "@wdlea/obj-lib",
+  "version": "0.0.1",
   "description": "A simple obj file parser",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib/**/*",
+    "lib/**",
     "license.txt"
   ],
   "scripts": {
@@ -22,5 +22,8 @@
   "license": "SEE LICENSE IN license.txt",
   "devDependencies": {
     "typescript": "^5.0.4"
+  },
+  "exports":{
+    ".":"./lib/"
   }
 }
