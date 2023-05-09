@@ -2,6 +2,8 @@
 
 A simple package i made for parsing .obj files. It can read files and return vertices, faces, normals and texture coordinates. 
 
+This would be private on NPM if i could make it private
+
 > This library CANNOT parse mtllibs
 
 > This library can only parse triangulated meshes
