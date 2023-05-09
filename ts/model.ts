@@ -13,7 +13,7 @@ export class Model {
 
 
     public UVs: Array<Vector3>;
-    public Normals: Array<Vector3>;
+    public normals: Array<Vector3>;
 
     //all the normals and UVs in order, will be resolved into Normals later in face code
     private UVsReference: Array<Vector3>;
@@ -29,7 +29,7 @@ export class Model {
         this.NormalsReference = new Array<Vector3>();
 
         this.UVs = new Array<Vector3>();
-        this.Normals = new Array<Vector3>();
+        this.normals = new Array<Vector3>();
 
         this.DefferredFaces = new Array<RawFace>();
     }
@@ -187,7 +187,7 @@ export class Model {
 
                 //resolve indices, and push to list
                 this.UVs.push(this.UVsReference[UVIndex]);
-                this.Normals.push(this.NormalsReference[NormalIndex]);
+                this.normals.push(this.NormalsReference[NormalIndex]);
             }
         }
     }
